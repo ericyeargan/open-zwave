@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Product xmlns='http://code.google.com/p/open-zwave/'>
-  <!-- This thermostat's setpoint descriptions are 0 based, not 1 -->
-  <CommandClass id="67" name="COMMAND_CLASS_THERMOSTAT_SETPOINT" base="0" />
+    <!-- This thermostat's setpoint descriptions are 0 based, not 1 -->
+    <CommandClass id="67" name="COMMAND_CLASS_THERMOSTAT_SETPOINT" base="0"/>
+    <CommandClass id="68" name="COMMAND_CLASS_THERMOSTAT_FAN_MODE" version="1" request_flags="4">
+        <Instance index="1" />
+        <Value type="list" genre="user" instance="1" index="0" label="Fan Mode" units="" read_only="false"
+               write_only="false" verify_changes="false" min="0" max="0" size="1">
+            <Item label="Auto Low" value="0" />
+            <Item label="On Low" value="1" />
+            <Item label="Circulate" value="6" />
+        </Value>
+        <SupportedModes>
+            <Mode index="0" label="Auto Low" />
+            <Mode index="1" label="On Low" />
+            <Mode index="6" label="Circulate"/>
+        </SupportedModes>
+    </CommandClass>
 </Product>
