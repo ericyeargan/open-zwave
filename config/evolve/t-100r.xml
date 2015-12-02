@@ -16,4 +16,13 @@
             <Mode index="6" label="Circulate"/>
         </SupportedModes>
     </CommandClass>
+    <CommandClass id="112" name="COMMAND_CLASS_CONFIGURATION" version="1" request_flags="4">
+        <Instance index="1" />
+
+        <!-- Specifies the 'run mode'.  '0' = 'hold temp', '1' = 'run schedule' -->
+        <Value type="byte" genre="config" instance="1" index="39" label="Parameter #39" units="" read_only="false" write_only="false" verify_changes="false" min="0" max="255" value="0" />
+
+        <!-- Specifies the 'away mode'.  '0' = 'home', '2' = 'away' -->
+        <Value type="byte" genre="config" instance="1" index="40" label="Parameter #40" units="" read_only="false" write_only="false" verify_changes="false" min="0" max="255" value="0" />
+    </CommandClass>
 </Product>
