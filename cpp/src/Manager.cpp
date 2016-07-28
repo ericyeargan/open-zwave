@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 #include "Defs.h"
 #include "Manager.h"
@@ -992,7 +993,7 @@ bool Manager::IsNodeZWavePlus
 		uint8 const _nodeId
 )
 {
-	uint8 version = 0;
+	bool version = false;
 	if( Driver* driver = GetDriver( _homeId ) )
 	{
 		version = driver->IsNodeZWavePlus( _nodeId );
@@ -1253,7 +1254,10 @@ string Manager::GetNodeManufacturerId
 {
 	if( Driver* driver = GetDriver( _homeId ) )
 	{
-		return driver->GetNodeManufacturerId( _nodeId );
+		uint16 mid = driver->GetNodeManufacturerId( _nodeId );
+		std::stringstream ss;
+		ss << "0x" << std::hex << std::setw(4) << std::setfill('0') << mid;
+		return ss.str();
 	}
 
 	return "Unknown";
@@ -1271,7 +1275,10 @@ string Manager::GetNodeProductType
 {
 	if( Driver* driver = GetDriver( _homeId ) )
 	{
-		return driver->GetNodeProductType( _nodeId );
+		uint16 mid = driver->GetNodeProductType( _nodeId );
+		std::stringstream ss;
+		ss << "0x" << std::hex << std::setw(4) << std::setfill('0') << mid;
+		return ss.str();
 	}
 
 	return "Unknown";
@@ -1282,7 +1289,7 @@ string Manager::GetNodeProductType
 // <Manager::GetNodeDeviceType>
 // Get the node device type as reported in the Z-Wave+ Info report.
 //-----------------------------------------------------------------------------
-uint8 Manager::GetNodeDeviceType
+uint16 Manager::GetNodeDeviceType
 (
 		uint32 const _homeId,
 		uint8 const _nodeId
@@ -1395,7 +1402,10 @@ string Manager::GetNodeProductId
 {
 	if( Driver* driver = GetDriver( _homeId ) )
 	{
-		return driver->GetNodeProductId( _nodeId );
+		uint16 mid = driver->GetNodeProductId( _nodeId );
+		std::stringstream ss;
+		ss << "0x" << std::hex << std::setw(4) << std::setfill('0') << mid;
+		return ss.str();
 	}
 
 	return "Unknown";
@@ -2419,6 +2429,43 @@ bool Manager::GetValueListItems
 
 	return res;
 }
+
+//-----------------------------------------------------------------------------
+// <Manager::GetValueListValues>
+// Gets the list of values from a list value
+//-----------------------------------------------------------------------------
+bool Manager::GetValueListValues
+(
+		ValueID const& _id,
+		vector<int32>* o_value
+)
+{
+	bool res = false;
+
+	if( o_value )
+	{
+		if( ValueID::ValueType_List == _id.GetType() )
+		{
+			if( Driver* driver = GetDriver( _id.GetHomeId() ) )
+			{
+				LockGuard LG(driver->m_nodeMutex);
+				if( ValueList* value = static_cast<ValueList*>( driver->GetValue( _id ) ) )
+				{
+					o_value->clear();
+					res = value->GetItemValues( o_value );
+					value->Release();
+				} else {
+					OZW_ERROR(OZWException::OZWEXCEPTION_INVALID_VALUEID, "Invalid ValueID passed to GetValueListValues");
+				}
+			}
+		} else {
+			OZW_ERROR(OZWException::OZWEXCEPTION_CANNOT_CONVERT_VALUEID, "ValueID passed to GetValueListValues is not a List Value");
+		}
+	}
+
+	return res;
+}
+
 
 //-----------------------------------------------------------------------------
 // <Manager::GetValueFloatPrecision>

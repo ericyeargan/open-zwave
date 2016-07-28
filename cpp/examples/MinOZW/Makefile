@@ -10,8 +10,8 @@
 .PHONY:	default clean
 
 
-DEBUG_CFLAGS    := -Wall -Wno-format -ggdb -DDEBUG
-RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3
+DEBUG_CFLAGS    := -Wall -Wno-format -ggdb -DDEBUG $(CPPFLAGS)
+RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3 $(CPPFLAGS)
 
 DEBUG_LDFLAGS	:= -g
 
@@ -35,21 +35,27 @@ include $(top_srcdir)/cpp/build/support.mk
 #if we are on a Mac, add these flags and libs to the compile and link phases 
 ifeq ($(UNAME),Darwin)
 CFLAGS += -DDARWIN
-ARCH += -arch i386 -arch x86_64
+TARCH += -arch i386 -arch x86_64
 endif
 
 # Dup from main makefile, but that is not included when building here..
 ifeq ($(UNAME),FreeBSD)
-ifeq (,$(wildcard /usr/include/iconv.h))
+LDFLAGS+= -lusb
+
+ifeq ($(shell test $$(uname -U) -ge 1002000; echo $$?),1)
+ifeq (,$(wildcard /usr/local/include/iconv.h))
+$(error FreeBSD pre 10.2: Please install libiconv from ports)
+else
 CFLAGS += -I/usr/local/include
 LDFLAGS+= -L/usr/local/lib -liconv
 endif
-LDFLAGS+= -lusb
+endif
+
 endif
 
 $(OBJDIR)/MinOZW:	$(patsubst %.cpp,$(OBJDIR)/%.o,$(minozwsrc))
 	@echo "Linking $(OBJDIR)/MinOZW"
-	$(LD) $(LDFLAGS) $(ARCH) -o $@ $< $(LIBS) -pthread
+	$(LD) $(LDFLAGS) $(TARCH) -o $@ $< $(LIBS) -pthread
 
 $(top_builddir)/MinOZW: $(top_srcdir)/cpp/examples/MinOZW/MinOZW.in $(OBJDIR)/MinOZW
 	@echo "Creating Temporary Shell Launch Script"
