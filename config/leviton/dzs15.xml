@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Product xmlns='http://code.google.com/p/open-zwave/'>
+    <!-- Immediate refresh on node info update will result in an app status of "try again later" -->
+    <Protocol refreshonnodeinfoframe="false"/>
+    <CommandClass id="34" name="COMMAND_CLASS_APPLICATION_STATUS"/>
+</Product>
